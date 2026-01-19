@@ -36,43 +36,53 @@
 
 <script>
   // 🔴 ใส่ URL Web App จาก Google Apps Script ตรงนี้
-  const API_URL = 'https://script.google.com/macros/s/AKfycbxFJLr3j190PJsSUyclhU79hbJQhAoePyg07bHJg9hSzMi7TMh_gkK3zuGxIlA9XSqz_A/exec';
+  const API_URL =
+  'https://script.google.com/macros/s/AKfycbxFJLr3j190PJsSUyclhU79hbJQhAoePyg07bHJg9hSzMi7TMh_gkK3zuGxIlA9XSqz_A/exec';
 
-  function loadTasks() {
-    fetch(API_URL)
-      .then(res => res.json())
-      .then(data => {
-        const list = document.getElementById('list');
-        list.innerHTML = '';
-        data.forEach(task => {
-          const li = document.createElement('li');
-          li.textContent = task;
-          list.appendChild(li);
-        });
-      });
-  }
+function addTask() {
+  const taskInput = document.getElementById('task');
+  if (!taskInput || taskInput.value.trim() === '') return;
+
+  fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8'
+    },
+    body: taskInput.value.trim()
+  })
+  .then(res => res.text())
+  .then(() => {
+    taskInput.value = '';
+    loadTasks();
+  })
+  .catch(err => {
+    console.error(err);
+    alert('เพิ่มข้อมูลไม่สำเร็จ');
+  });
+}
 
   function addTask() {
-    const taskInput = document.getElementById('task');
-    if (taskInput.value === '') return;
+  const taskInput = document.getElementById('task');
+  if (!taskInput || taskInput.value.trim() === '') return;
 
-    // ใช้ text/plain เพื่อเลี่ยง CORS preflight (Google Apps Script รองรับแน่นอน)
-    fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8'
-      },
-      body: taskInput.value
-    })
-    .then(res => res.text())
-    .then(() => {
-      taskInput.value = '';
-      loadTasks();
-    })
-    .catch(err => alert('เพิ่มข้อมูลไม่สำเร็จ: ' + err));
-  }
+  fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8'
+    },
+    body: taskInput.value.trim()
+  })
+  .then(res => res.text())
+  .then(() => {
+    taskInput.value = '';
+    loadTasks();
+  })
+  .catch(err => {
+    console.error(err);
+    alert('เพิ่มข้อมูลไม่สำเร็จ');
+  });
+}
 
-  loadTasks();
 </script>
 
 </body>
