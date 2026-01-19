@@ -1,79 +1,49 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <title>Web App เก็บข้อมูลออนไลน์ (Google Sheet)</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .app {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      width: 340px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    h1 { text-align: center; font-size: 20px; }
-    input, button { width: 100%; padding: 10px; margin-top: 10px; }
-    ul { padding-left: 20px; }
-    li { margin-top: 5px; }
-  </style>
+<meta charset="UTF-8">
+<title>Web App</title>
 </head>
 <body>
 
-<div class="app">
-  <h1>☁️ Web App ออนไลน์</h1>
-  <input type="text" id="task" placeholder="พิมพ์รายการ">
-  <button onclick="addTask()">เพิ่ม</button>
-  <ul id="list"></ul>
-</div>
+<input id="task" placeholder="พิมพ์ข้อมูล">
+<button onclick="addTask()">เพิ่ม</button>
+<ul id="list"></ul>
 
 <script>
-  // 🔴 ใส่ URL Web App จาก Google Apps Script ตรงนี้
-  const API_URL = 'https://script.google.com/macros/s/AKfycbxCwTTL5IbIzTeZt20pwrvRu7dA79zBiDvmu6WSpzlZEPJBG3KOt8-miPIOq_4nQThHFA/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxCwTTL5IbIzTeZt20pwrvRu7dA79zBiDvmu6WSpzlZEPJBG3KOt8-miPIOq_4nQThHFA/exec'; // ต้องมีแค่อันเดียว
 
-  function loadTasks() {
-    fetch(API_URL)
-      .then(res => res.json())
-      .then(data => {
-        const list = document.getElementById('list');
-        list.innerHTML = '';
-        data.forEach(task => {
-          const li = document.createElement('li');
-          li.textContent = task;
-          list.appendChild(li);
-        });
+function loadTasks() {
+  fetch(API_URL)
+    .then(r => r.json())
+    .then(data => {
+      const list = document.getElementById('list');
+      list.innerHTML = '';
+      data.forEach(t => {
+        const li = document.createElement('li');
+        li.textContent = t;
+        list.appendChild(li);
       });
-  }
+    });
+}
 
-  function addTask() {
+function addTask() {
   const input = document.getElementById('task');
   if (!input.value.trim()) return;
 
   fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: input.value.trim()
+    body: input.value
   })
-  // ❗ 302 ถือว่าสำเร็จ ไม่ต้องเช็ก status
   .then(() => {
     input.value = '';
     loadTasks();
   })
-  .catch(err => {
-    console.error(err);
-    alert('เพิ่มข้อมูลไม่สำเร็จ');
-  });
+  .catch(() => alert('เพิ่มข้อมูลไม่สำเร็จ'));
 }
 
-
-  loadTasks();
+loadTasks();
 </script>
 
 </body>
